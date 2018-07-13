@@ -1,0 +1,43 @@
+<template name="Expenses_overview">
+  <h1>Expenses overview</h1>
+
+  <table class="table table-striped table-sm small table-hover">
+    <thead>
+      <tr>
+        <th></th>
+        <th scope="col">Date</th>
+        <th scope="col">Price</th>
+        {{#each users}}
+        <th scope="col">{{username}}</th>
+        {{/each}}
+        <th scope="col">&euro; p.p.</th>
+        <th scope="col">Type</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th scope="row" colspan="3">Balance</th>
+        {{#each users}}
+        <th scope="col">&euro; ??</th>
+        {{/each}}
+        <th colspan="3"></th>
+      </tr>
+    </tfoot>
+    <tbody>
+      {{#each expense in expenses}}
+        <tr>
+          <td><a href="/expenses/edit/{{expense._id}}"><i class="fas fa-edit"></i></a></td>
+          <th scope="row">{{formatDate expense.date}}</th>
+          <td>{{formatPrice expense.price}}</td>
+          {{#each user in users}}
+          <td class="{{isOwner user._id expense.ownerId}} {{isSelf user._id}}">{{correspondingValue user._id expense.priceDistribution}}</td>
+          {{/each}}
+          <td>{{formatPrice expense.pricePerPerson}}</td>
+          <td>{{expense.type}}</td>
+          <td>{{expense.description}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</template>

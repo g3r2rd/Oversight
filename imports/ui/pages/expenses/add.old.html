@@ -1,0 +1,55 @@
+<template name="Expenses_add">
+  <h2>Add new expense</h2>
+  <form class="new-expense">
+
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input type="text" class="form-control" id="price" name="price" placeholder="&euro;">
+    </div>
+
+    <div class="form-group">
+      <label for="date">Date</label>
+      <input type="text" class="form-control" id="date" name="date" placeholder="Enter the date">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <input type="text" class="form-control" id="description" name="description" placeholder="Enter the description">
+    </div>
+
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select class="form-control" id="type" name="type">
+        <option>House</option>
+        <option>Meal</option>
+        <option>Other</option>
+        <option>Balance</option>
+      </select>
+    </div>
+
+    <label>Chipping in</label>
+    <div class="row">
+      {{#each users}}
+        <div class="col-sm-6 col-md-5 col-lg-4 col-xl-4">
+          <div class="form-group row">
+            <label for="user-{{username}}" class="col-sm-5 col-form-label">{{username}}</label>
+            <div class="col-sm-7">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <button type="button" class="btn btn-primary btn-number" data-type="minus" data-field="user-{{username}}" disabled><i class="fas fa-minus"></i></button>
+                </div>
+                <input type="text" class="form-control" name="user-{{username}}" id="user-{{username}}" value="0">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="user-{{username}}"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+  </form>
+</template>

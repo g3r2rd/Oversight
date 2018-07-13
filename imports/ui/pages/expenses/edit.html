@@ -1,0 +1,11 @@
+<template name="Expenses_edit">
+  <h2>Edit expense</h2>
+  
+  {{#autoForm id="updateExpenseForm" type="update" collection=Expenses doc=selectedExpenseDoc}}
+    {{> afQuickFields firstOption=false omitFields="priceDistribution"}}
+    {{> afQuickField name="priceDistribution"}}
+    <div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  {{/autoForm}}
+</template>

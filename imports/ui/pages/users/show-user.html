@@ -1,0 +1,18 @@
+<template name="Users_showUser">
+  <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <th scope="row">{{_id}}</th>
+            <td>{{username}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+</template>
