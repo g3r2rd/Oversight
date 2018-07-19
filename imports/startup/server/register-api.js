@@ -8,3 +8,6 @@ import '../../api/users/server/publications.js';
 
 import '../../api/expenses/methods.js';
 import '../../api/expenses/server/publications.js';
+
+import '../../api/balance-entries/methods.js';
+import '../../api/balance-entries/server/publications.js';

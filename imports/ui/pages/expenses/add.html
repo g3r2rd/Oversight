@@ -1,8 +1,47 @@
 <template name="Expenses_add">
   <h2>Add new expense</h2>
   {{#autoForm id="insertExpenseForm" type="insert" collection=Expenses}}
-    {{> afQuickFields firstOption=false omitFields="priceDistribution"}}
-    {{> afQuickField name="priceDistribution"}}
+    {{> afQuickField name="type" options=expenseTypes firstOption=false}}
+    {{> afQuickField name="price"}}
+    {{> afQuickField name="date"}}
+    {{> afQuickField name="description"}}
+
+    <!--{{#if afFieldValueIs name="type" value="balance"}}
+      BALANS!
+    {{else}}
+      GEEN BALANS!
+    {{/if}}-->
+    <!--{{> afQuickFields firstOption=false omitFields="priceDistribution"}}-->
+
+    <!--{{> afQuickField name="priceDistribution"}}-->
+
+
+    <label>Chipping in</label>
+    <div class="row">
+      {{#each activeUsers}}
+        <div class="col-sm-6 col-md-5 col-lg-4 col-xl-4">
+          <div class="form-group row">
+            <!-- priceDistribution.userId field -->
+            <input value="{{userId}}" name="{{userIdField}}" required="" data-schema-key="{{userIdField}}" type="hidden">
+            <!--{{> afFieldInput name=userIdField type="hidden"}}-->
+            <label for="user-{{username}}" class="col-sm-5 col-form-label">{{username}}</label>
+            <div class="col-sm-7">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <button type="button" class="btn btn-primary btn-number" data-type="minus" data-field="user-{{username}}" disabled><i class="fas fa-minus"></i></button>
+                </div>
+                <!-- priceDistribution.amount field -->
+                <input type="number" class="form-control" name="{{amountField}}" data-schema-key="{{amountField}}" id="user-{{username}}" value="0">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="user-{{username}}"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
     <div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>

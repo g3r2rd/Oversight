@@ -37,3 +37,5 @@ rzymek:moment-locale-nl
 numeral:numeral
 numeral:languages
 aldeed:delete-button
+matb33:collection-hooks
+dburles:collection-helpers

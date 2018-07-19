@@ -1,0 +1,21 @@
+<template name="Expenses_ledger">
+  <h1>Personal ledger</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Description</th>
+        <th scope="col">..</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each balanceEntries}}
+        <tr>
+          <th scope="row">{{formatDate date}}</th>
+          <td>{{description}}</td>
+          <td>{{formatPrice modification}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+</table>
+</template>

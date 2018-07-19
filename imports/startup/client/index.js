@@ -4,6 +4,7 @@ import { AutoForm } from 'meteor/aldeed:autoform';
 import SimpleSchema from 'simpl-schema';
 
 import './routes.js';
+import './autoform-hooks.js';
 
 SimpleSchema.debug = true;
 

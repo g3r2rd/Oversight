@@ -6,6 +6,8 @@
     {{> afQuickField name="priceDistribution"}}
     <div>
       <button type="submit" class="btn btn-primary">Submit</button>
+
+      {{> quickRemoveButton collection=Expenses _id=selectedExpenseDoc._id}}
     </div>
   {{/autoForm}}
 </template>

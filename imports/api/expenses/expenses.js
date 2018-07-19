@@ -7,7 +7,12 @@ import { Tracker } from 'meteor/tracker';
 SimpleSchema.debug = true;
 
 export const Expenses = new Mongo.Collection('expenses');
-export const expenseTypes = ['house', 'meal', 'other', 'balance'];
+export const expenseTypes = [
+  {label: 'House', value: 'house'},
+  {label: 'Meal', value: 'meal'},
+  {label: 'Other', value: 'other'},
+  {label: 'Balance', value: 'balance'}
+];
 
 SimpleSchema.extendOptions(['autoform']);
 
@@ -27,7 +32,11 @@ Expenses.Schema = new SimpleSchema({
   price: {
     type: Number,
     label: 'Price',
-    min: 0,
+    /*autoform: {
+      afFieldInput: {
+        type: "currency",
+      },
+    }*/
   },
   date: {
     type: Date,
@@ -42,12 +51,22 @@ Expenses.Schema = new SimpleSchema({
   type: {
     type: String,
     label: 'Type',
-    allowedValues: expenseTypes,
+    allowedValues: expenseTypes.map(a => a.value),
   }, 
   priceDistribution: {
     type: Array,
     label: 'Price distribution',
     minCount: 2,
+    /*defaultValue: function () {
+
+      Users = Meteor.users.find({}, { fields: { _id: 1 }, sort: { username: 1 } }).fetch();
+      
+      console.log(Users);
+      Users.forEach(user => {
+        
+      });
+      return [{userId: 'aaaa', amount: 0}, {userId: 'aaab', amount: 0}];
+    },*/
   },
   'priceDistribution.$': {
     type: Object,
@@ -71,24 +90,31 @@ Expenses.Schema = new SimpleSchema({
   'priceDistribution.$.amount': {
     type: Number,
   },
-  pricePerPerson: {
+  pricePerPerson: { // THIS VALUE IS ONLY USED FOR THE UI
     type: Number,
+    optional: true,
     autoValue: function() {
       var priceDistribution = this.field('priceDistribution');
-      var price = this.field('price');
+      var price             = this.field('price');
 
-      if(priceDistribution.isSet && price.isSet) {
-        // Collect the number of participants.
+      // Only update the price per person if the price or the distribution has changed
+      if (priceDistribution.isSet || price.isSet) {
+        // Compute the number of people
         var numberOfPeople = 0;
         priceDistribution.value.forEach(entry => {
           numberOfPeople += entry.amount;
         });
 
-        // Round the values to two digits. 
-        return Math.round((price.value / numberOfPeople) * 100) / 100;
-      } else {
-        this.unset();
+        if (this.isInsert) {
+          return Math.round((price.value / numberOfPeople) * 100) / 100; // Round the values to two digits.
+        } else if (this.isUpsert) {
+          return { $setOnInsert: Math.round((price.value / numberOfPeople) * 100) / 100 };
+        } else if (this.isUpdate) {
+          return { $set: Math.round((price.value / numberOfPeople) * 100) / 100 };
+        }
       }
+
+      this.unset();
     },
     autoform: {
 			type: 'hidden',
@@ -123,3 +149,41 @@ Expenses.Schema = new SimpleSchema({
 }, { tracker: Tracker });
 
 Expenses.attachSchema(Expenses.Schema);
+
+Expenses.after.insert(function (userId, doc) {
+  
+  Meteor.call('balance-entries.add', {
+    expenseId: doc._id, 
+    priceDistribution: doc.priceDistribution, 
+    totalPrice: doc.price, 
+    ownerId: doc.ownerId,
+    date: doc.date,
+    description: doc.description
+  });
+
+});
+
+Expenses.after.update(function (userId, doc, fieldNames, modifier, options) {
+
+  Meteor.call('balance-entries.remove', { 
+    expenseId: doc._id
+  });
+
+  Meteor.call('balance-entries.add', {
+    expenseId: doc._id, 
+    priceDistribution: doc.priceDistribution, 
+    totalPrice: doc.price, 
+    ownerId: doc.ownerId,
+    date: doc.date,
+    description: doc.description
+  });
+
+}, { fetchPrevious: false }); // Don't fetch the previous doc
+
+Expenses.before.remove(function (userId, doc) {
+
+  Meteor.call('balance-entries.remove', { 
+    expenseId: doc._id
+  });
+
+});

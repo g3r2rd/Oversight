@@ -7,6 +7,7 @@ import '../../ui/pages/home/home.js';
 import '../../ui/pages/users/overview.js';
 import '../../ui/pages/users/show-user.js';
 import '../../ui/pages/expenses/overview.js';
+import '../../ui/pages/expenses/ledger.js';
 import '../../ui/pages/expenses/edit.js';
 import '../../ui/pages/expenses/add.js';
 import '../../ui/pages/not-found/not-found.js';
@@ -30,6 +31,13 @@ FlowRouter.route('/expenses', {
   name: 'Expenses.overview',
   action() {
     BlazeLayout.render('App_body', { main: 'Expenses_overview' });
+  },
+});
+
+FlowRouter.route('/expenses/ledger', {
+  name: 'Expenses.ledger',
+  action() {
+    BlazeLayout.render('App_body', { main: 'Expenses_ledger' });
   },
 });
 

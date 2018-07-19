@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { AutoForm } from 'meteor/aldeed:autoform';
 
 import './add.html';
 
-import { Expenses } from '/imports/api/expenses/expenses.js';
+import { Expenses, expenseTypes } from '/imports/api/expenses/expenses.js';
 
 Template.Expenses_add.onCreated(function () {
-  Meteor.subscribe('users.onlyNames');
+  Meteor.subscribe('users.all');
   Meteor.subscribe('expenses.all');
 });
 
@@ -20,13 +21,56 @@ Template.Expenses_add.helpers({
   Expenses() {
     return Expenses;
   },
+  expenseTypes() {
+    return expenseTypes;
+  },
+  distributionData() {
+    // Gather the user ids
+    Users   = Meteor.users.find({}, { fields: { _id: 1 }, sort: { username: 1 } }).fetch();
+    UserIds = Users.map(user => user._id);
+
+    // Prepare them as doc (to serve as default values in the form)
+    data = { priceDistribution: [] };
+    UserIds.forEach(userId => {
+      data.priceDistribution.push({ userId: userId, amount: 0 });
+    })
+    return data;
+  },
+  'usernameFromId'(fieldName) {
+    //var someValue = AutoForm.getFieldValue(fieldName);
+    //console.log(someValue);
+    //User = Meteor.users.findOne({ _id: userId }, { fields: { username: 1 } }).fetch();
+    return 0;
+  },
+  activeUsers() {
+    // Gather the users
+    Users = Meteor.users.find({}, { fields: { _id: 1, username: 1 }, sort: { username: 1 } }).fetch();
+
+    // Return their name and ids such that we can create a decent custom form.
+    data = [];
+    for(i = 0; i < Users.length; i++) {
+      data.push({ 
+        username: Users[i].username, 
+        userId: Users[i]._id, 
+        userIdField: 'priceDistribution.'+i+'.userId', 
+        amountField: 'priceDistribution.'+i+'.amount'
+      });
+    }
+    return data;
+  }
 });
 
-/*
+Template.Expenses_add.events({
+  /*'keyup'(event) {
+    
+  },*/
+});
+
+
 Template.Expenses_add.events({
 
   // Submit form event
-  'submit .new-expense'(event) {
+  /*'submit .new-expense'(event) {
     event.preventDefault();
 
     const target   = event.target;
@@ -61,7 +105,7 @@ Template.Expenses_add.events({
     //     FlowRouter.go('App.home');
     //   }
     // });
-  },
+  },*/
 
   // Increase and decrease button functionality for the chipping in system.
   'click .btn-number' (event, template) {
@@ -75,7 +119,7 @@ Template.Expenses_add.events({
 
     if(type == 'plus') {
       // Increase the number by 1.
-      template.$('#'+field).val(++curValue);
+      template.$('#' + field).val(++curValue);
 
       // Make sure that the minus button is enabled.
       template.$('.btn-number[data-type="minus"][data-field="' + field + '"]').removeAttr('disabled');
@@ -95,4 +139,3 @@ Template.Expenses_add.events({
   }
 
 });
-*/
